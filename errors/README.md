@@ -9,10 +9,13 @@
 
     ```go
        type TypedError interface {
-	        Code() Type
+          Type() Type
+          // if TypedError has no InnerErr, returns nil
+          InnerErr() TypedError
 	        error
         }
     ```
+
     All errors in errors package are Typed Error:
     withErr, withValue, ConstErr, httpError 
 
@@ -23,9 +26,9 @@
 	        HTTPCode() int
         }
     ```
+
+
     All HTTPError are TypedError: httpError
-
-
 
     - format vs no format
     - Standard Go Errors (withErr)
@@ -35,31 +38,27 @@
        - Is the error needs to wrap with another error?
          like `errors.Wrap("a label", err)`
          Yes? Create an error in withErr.go
-         * Append the Enum name in const
-         * Append the label in withErrStr.
-         * Append a NewFunc in the vars func
-         * Append a testcode in errors_test.go TestIota 
+         * Append the Enum name in const.
+         * Append the label in withErrStrMap.
+         * Append a NewFunc in the vars func.
        
        - Is the error needs to wrap one or more value?
          like `fmt.Errof("The name %s already exist", name)`
          Yes? Create an error in withValue.go
-         * Append the Enum name in const
-         * Append the label format in withValueStr
-         * Create the New func 
-         * Append a testcode in errors_test.go TestIota
+         * Append the Enum name in const.
+         * Append the label format in withValueStrMap.
+         * Create the New func.
        
        - Is the error just a const string
          like `fmt.Errof("Organization not found")`
          Yes? Create an error in const.go
          * Append the enum name to const
-         * Append the string value to constStr
-         * Append a testcode in errors_test.go TestIota 
+         * Append the string value to constStrMap.
 
        - Is the error needs an http code
          Yes? Create an error in http.go
          * Append the enum name to const
          * Append the http code in httpCode
-         * Append the string value in httpStr
+         * Append the string value in httpStrMap
          * Append the New func in func var
-         * Append a testcode in errors_test.go TestIota
           
