@@ -19,14 +19,15 @@ func NewTranspiler() *Transpiler {
 	return new(Transpiler)
 }
 
-func (t *Transpiler) Transpile(ctx context.Context, txt string) (*query.Spec, error) {
+func (t *Transpiler) Transpile(ctx context.Context, txt string, config interface{}) (*query.Spec, error) {
 	// Parse the text of the query.
 	q, err := influxql.ParseQuery(txt)
 	if err != nil {
 		return nil, err
 	}
 
-	transpiler := newTranspilerState()
+	cfg, _ := config.(*Config)
+	transpiler := newTranspilerState(cfg)
 	for i, s := range q.Statements {
 		stmt, ok := s.(*influxql.SelectStatement)
 		if !ok {
@@ -42,16 +43,20 @@ func (t *Transpiler) Transpile(ctx context.Context, txt string) (*query.Spec, er
 type transpilerState struct {
 	id     int
 	stmt   *influxql.SelectStatement
+	config Config
 	spec   *query.Spec
 	nextID map[string]int
 	now    time.Time
 }
 
-func newTranspilerState() *transpilerState {
+func newTranspilerState(config *Config) *transpilerState {
 	state := &transpilerState{
 		spec:   &query.Spec{},
 		nextID: make(map[string]int),
 		now:    time.Now(),
+	}
+	if config != nil {
+		state.config = *config
 	}
 	return state
 }

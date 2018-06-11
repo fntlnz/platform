@@ -69,7 +69,7 @@ func main() {
 		}
 
 		transpiler := influxql.NewTranspiler()
-		influxqlSpec, err := transpiler.Transpile(context.Background(), string(influxqlText))
+		influxqlSpec, err := transpiler.Transpile(context.Background(), string(influxqlText), nil)
 		if err != nil {
 			fmt.Printf("error transpiling. \n query: \n %s \n err: %s", string(influxqlText), err)
 			return
